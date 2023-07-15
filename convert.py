@@ -19,6 +19,9 @@ def compressed_image_callback(msg):
         # Create a new Image message and populate it with the raw image data
         raw_image_msg = bridge.cv2_to_imgmsg(raw_image, encoding="mono8")
 
+        # Set the timestamp of the raw image to match the compressed image timestamp
+        raw_image_msg.header.stamp = msg.header.stamp
+
         # Publish the raw image on the topic "alphasense_driver_ros/cam0/image_raw"
         raw_image_pub.publish(raw_image_msg)
     except Exception as e:
