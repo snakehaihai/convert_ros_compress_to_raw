@@ -9,10 +9,15 @@ def compressed_image_callback(msg):
     try:
         # Convert the compressed image to raw image using cv_bridge
         bridge = CvBridge()
-        raw_image = bridge.compressed_imgmsg_to_cv2(msg)
+        raw_image = bridge.compressed_imgmsg_to_cv2(msg, desired_encoding='passthrough')
+
+        # Ensure the image is 8-bit grayscale (8UC1)
+        if len(raw_image.shape) == 3:
+            # Convert BGR to grayscale
+            raw_image = cv2.cvtColor(raw_image, cv2.COLOR_BGR2GRAY)
 
         # Create a new Image message and populate it with the raw image data
-        raw_image_msg = bridge.cv2_to_imgmsg(raw_image, encoding="bgr8")
+        raw_image_msg = bridge.cv2_to_imgmsg(raw_image, encoding="mono8")
 
         # Publish the raw image on the topic "alphasense_driver_ros/cam0/image_raw"
         raw_image_pub.publish(raw_image_msg)
